@@ -1,0 +1,20 @@
+﻿Build started 10/15/2012 6:40:48 PM.
+     1>Project "C:\Users\Rob\workspace\cosmos-sim\disp-particles\disp-particles\disp-particles.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Touching "Debug\disp-particles.unsuccessfulbuild".
+       AddCudaCompileDeps:
+         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\cl.exe /E /nologo /showIncludes /TP /D__CUDACC__ /I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\bin" /I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include" /I. /FIcuda_runtime.h /c C:\Users\Rob\workspace\cosmos-sim\disp-particles\disp-particles\bodysystemcuda.cu 
+       CudaBuild:
+         Compiling CUDA source file bodysystemcuda.cu...
+         cmd.exe /C "C:\Users\Rob\AppData\Local\Temp\tmp38602e74e7d6422ea71ef5e75888a8c5.cmd"
+         "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\bin\nvcc.exe" -gencode=arch=compute_10,code=\"sm_10,compute_10\" --use-local-env --cl-version 2010 -ccbin "c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin"  -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include"  -G  --keep-dir "Debug" -maxrregcount=0  --machine 32 --compile  -g    -Xcompiler "/EHsc /nologo /Od /Zi  /MDd  " -o "Debug\bodysystemcuda.cu.obj" "C:\Users\Rob\workspace\cosmos-sim\disp-particles\disp-particles\bodysystemcuda.cu"
+         
+         C:\Users\Rob\workspace\cosmos-sim\disp-particles\disp-particles>"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\bin\nvcc.exe" -gencode=arch=compute_10,code=\"sm_10,compute_10\" --use-local-env --cl-version 2010 -ccbin "c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin"  -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include"  -G  --keep-dir "Debug" -maxrregcount=0  --machine 32 --compile  -g    -Xcompiler "/EHsc /nologo /Od /Zi  /MDd  " -o "Debug\bodysystemcuda.cu.obj" "C:\Users\Rob\workspace\cosmos-sim\disp-particles\disp-particles\bodysystemcuda.cu" 
+         bodysystemcuda.cu
+     1>C:/Users/Rob/workspace/cosmos-sim/disp-particles/disp-particles/bodysystemcuda.cu(12): fatal error C1083: Cannot open include file: 'cutil_inline.h': No such file or directory
+     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\BuildCustomizations\CUDA 4.2.targets(361,9): error MSB3721: The command ""C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\bin\nvcc.exe" -gencode=arch=compute_10,code=\"sm_10,compute_10\" --use-local-env --cl-version 2010 -ccbin "c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin"  -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include"  -G  --keep-dir "Debug" -maxrregcount=0  --machine 32 --compile  -g    -Xcompiler "/EHsc /nologo /Od /Zi  /MDd  " -o "Debug\bodysystemcuda.cu.obj" "C:\Users\Rob\workspace\cosmos-sim\disp-particles\disp-particles\bodysystemcuda.cu"" exited with code 2.
+     1>Done Building Project "C:\Users\Rob\workspace\cosmos-sim\disp-particles\disp-particles\disp-particles.vcxproj" (build target(s)) -- FAILED.
+
+Build FAILED.
+
+Time Elapsed 00:00:00.66
