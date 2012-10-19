@@ -13,24 +13,6 @@ GL_GEOMETRY_INPUT_TYPE_EXT   = 0x8DDB
 GL_GEOMETRY_OUTPUT_TYPE_EXT  = 0x8DDC
 GL_GEOMETRY_VERTICES_OUT_EXT = 0x8DDA
 
-# 1:
-# Define the missing glProgramParameteri method
-_glProgramParameteri = None
-def glProgramParameteri( program, pname, value  ):
-    global _glProgramParameteri
-    if not _glProgramParameteri:
-        import ctypes
-        # Open the opengl32.dll
-        gldll = ctypes.windll.opengl32
-        # define a function pointer prototype of *(GLuint program, GLenum pname, GLint value)
-        prototype = ctypes.WINFUNCTYPE( ctypes.c_int, ctypes.c_uint, ctypes.c_uint, ctypes.c_int )
-        # Get the win gl func adress
-        fptr = gldll.wglGetProcAddress( 'glProgramParameteri' )
-        if fptr==0:
-            raise Exception( "wglGetProcAddress('glProgramParameteri') returned a zero adress, which will result in a nullpointer error if used.")
-        _glProgramParameteri = prototype( fptr )
-    _glProgramParameteri( program, pname, value )
-
 vert = '''
 void main(){
     gl_FrontColor = gl_Color;
@@ -82,6 +64,16 @@ theta = 0.0
 delta = 0.0
 TIMEOUTFACTOR = 5.0
 
+# view params
+ox = 0
+oy = 0
+buttonState      = 0
+camera_trans     = [0, -2, -25]
+camera_rot       = [0, 0, 0]
+camera_trans_lag = [0, -2, -25]
+camera_rot_lag   = [0, 0, 0]
+inertia          = 0.1
+
 def my_idle( ):
     global theta
     global delta 
@@ -128,19 +120,19 @@ def define_shader():
     glProgramParameteri(shader_program, GL_GEOMETRY_OUTPUT_TYPE_EXT, gl.GL_TRIANGLE_STRIP )
     glProgramParameteri(shader_program, GL_GEOMETRY_VERTICES_OUT_EXT, 4 )
 
-    vobj = glCreateShaderObject( GL_VERTEX_SHADER )
+    vobj = glCreateShader( GL_VERTEX_SHADER )
     glShaderSource( vobj, vert )
     glCompileShader( vobj )
     print glGetShaderInfoLog(vobj)
     glAttachShader( shader_program, vobj )
     
-    gobj = glCreateShaderObject( GL_GEOMETRY_SHADER_EXT )
+    gobj = glCreateShader( GL_GEOMETRY_SHADER_EXT )
     glShaderSource( gobj, geom)    
     glCompileShader( gobj )
     print glGetShaderInfoLog(gobj)
     glAttachShader( shader_program, gobj )
 
-    fobj = glCreateShaderObject( GL_FRAGMENT_SHADER )
+    fobj = glCreateShader( GL_FRAGMENT_SHADER )
     glShaderSource( fobj, frag)    
     glCompileShader( fobj )
     print glGetShaderInfoLog(fobj)
@@ -149,13 +141,55 @@ def define_shader():
     glLinkProgram( shader_program )
     print glGetProgramInfoLog(shader_program)
 
-
 def reshape( width, height ):
    glViewport(0, 0, width, height);
    glMatrixMode(GL_PROJECTION);
    glLoadIdentity();
    gluPerspective(65.0, width / float(height), 1, 1000 );
    glMatrixMode(GL_MODELVIEW);
+
+def mouse(button, state, x, y):
+    global buttonState
+    global ox, oy
+    if (state == GLUT_DOWN):
+        buttonState |= 1 << button
+    elif (state == GLUT_UP):
+        buttonState = 0;
+
+    mods = glutGetModifiers()
+    if (mods & GLUT_ACTIVE_SHIFT):
+        buttonState = 2
+    elif (mods & GLUT_ACTIVE_CTRL):
+        buttonState = 3;
+
+    ox = x
+    oy = y;
+
+    glutPostRedisplay()
+
+def motion(x, y):
+    global buttonState
+    global ox, oy
+    global camera_trans
+    global camera_rot
+    dx = x - ox
+    dy = y - oy
+
+    if buttonState == 3:
+        # left+middle = zoom
+        camera_trans[2] += (dy / 100.0) * 0.5 * abs(camera_trans[2])
+    elif buttonState & 2:
+        # middle = translate
+        camera_trans[0] += dx / 100.0
+        camera_trans[1] -= dy / 100.0
+    elif buttonState & 1:
+        # left = rotate
+        camera_rot[0] += dy / 5.0
+        camera_rot[1] += dx / 5.0
+    
+    ox = x
+    oy = y
+    glutPostRedisplay()
 
 POINTS = None
 COLORS = None
@@ -164,15 +198,17 @@ TIMES = None
 def display( ):   
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT )  
    glLoadIdentity()   
-   gluLookAt( 60.0,60.0,25.0,
+   gluLookAt( 60.0,60.0, 25.0,
               0.0,0.0,0.0,
               0.0,0.0,1.0 )
-  
 
-   #glRotate( theta*10.0, 0.0,0.0,1.0 )
-   glTranslatef( 25.0,25.0,0 )
-   
-   #glEnable( GL_BLEND )
+   c = 0
+   for c in xrange(3):
+     camera_trans_lag[c] += (camera_trans[c] - camera_trans_lag[c]) * inertia;
+     camera_rot_lag[c] += (camera_rot[c] - camera_rot_lag[c]) * inertia;
+   glTranslatef(camera_trans_lag[0], camera_trans_lag[1], camera_trans_lag[2])
+   glRotatef(camera_rot_lag[0], 1.0, 0.0, 0.0)
+   glRotatef(camera_rot_lag[1], 0.0, 1.0, 0.0)
    glBlendFunc( GL_SRC_ALPHA, GL_ONE )
    glUseProgram( shader_program )
    glEnableClientState( GL_COLOR_ARRAY )
@@ -193,6 +229,8 @@ def init():
     
     glutReshapeFunc( reshape )
     glutDisplayFunc( display )
+    glutMouseFunc( mouse )
+    glutMotionFunc( motion )
     glutIdleFunc( my_idle )
     glEnable( GL_DEPTH_TEST )
     glClearColor( 1,1,1,0 )
@@ -207,9 +245,9 @@ def init():
     global VEL
     global TIMES    
     COLORS =numpy.random.random( count*3 ).reshape( (-1,3) )
-    POINTS = 100000*numpy.ones( count*3 ).reshape( (-1,3) )    
+    POINTS = 100000*numpy.ones( count*3 ).reshape( (-1,3) )
     VEL = numpy.zeros( count*3 ).reshape( (-1,3) )
-    TIMES = numpy.random.random( count ) * TIMEOUTFACTOR    
+    TIMES = numpy.random.random( count ) * TIMEOUTFACTOR
     glutMainLoop();
 
 init()

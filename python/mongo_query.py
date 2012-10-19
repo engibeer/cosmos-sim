@@ -21,6 +21,15 @@ for i, row in enumerate(result):
 	ys[i] = row['y']
 	zs[i] = row['z']
 
+print max(xs)
+print min(xs)
+print
+print max(ys)
+print min(ys)
+print
+print max(zs)
+print min(zs)
+
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 ax.scatter(xs, ys, zs, c='r', marker='o')
