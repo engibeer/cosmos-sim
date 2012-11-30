@@ -1,0 +1,1 @@
+ifort  -O3 -axW -ftz -unroll -openmp -mcmodel=medium -i-dynamic -xW -convert big_endian -o hstart_G.exe hstart_Galaxy.F ART_Control.F ART_Init.F ART_Density2.F ART_Density1.F ART_Modify.F ART_Tools.F ART_Particles.F ART_Conversions.F ART_Magic.F ART_EoS.F ART_TimeStep.F ART_Cooling.F ART_SF.F

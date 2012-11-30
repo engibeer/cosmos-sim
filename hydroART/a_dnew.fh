@@ -1,0 +1,11 @@
+
+	parameter ( Np_chunk = 1000000)
+	real*8 dpc(Np_chunk,8)  ! contributions to acceptors
+	integer ipc(Np_chunk)   ! parent cell index
+        integer iac(Np_chunk,8) ! acceptor cell indices
+
+        common / NEWDENS00 / ipc  
+	common / NEWDENS02 / dpc, iac
+	
+	integer iPL(npmax)  ! level of the cell to which particle belongs 
+	common / PART21 / iPL   
