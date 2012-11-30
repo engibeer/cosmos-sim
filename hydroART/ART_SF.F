@@ -242,7 +242,7 @@ c                   endif
       ENDIF
 c
 #ifdef DEBUGsf
-      if (formedstar == .true.) then
+      if (formedstar .eqv. .true.) then
       	call Open_ASCII_File ( 13 , 'debug ' , append ) 
       	write(13,*) 'In Star_Formation...'
       	dtlev = dtl(Level) * t0 * aexp(Level)**2
