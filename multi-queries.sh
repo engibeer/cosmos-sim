@@ -18,7 +18,7 @@
 # The MultiDark Database Team, latest update: Feb. 2012
 
 username="robertrose"	# <--- your database user name
-userpwd="adv32323"	# <--- your password
+userpwd="xxx"	# <--- your password
 
 
 snapnum=85
